@@ -201,6 +201,8 @@ def run_analysis(text: str, filename: str) -> dict:
             "similarity_score": signal_results.get("semantic_similarity", {}).get("score", 0),
             "mismatch_score": signal_results.get("skills_mismatch", {}).get("score", 0),
         },
+        "email_verification": signal_results.get("email_validation", {}).get("verified_emails", []),
+        "phone_verification": signal_results.get("phone_validation", {}).get("verified_phones", []),
         "signal_details": signal_summary,
         "breakdown": risk_score["breakdown"],
         "llm_explanation": explanation,

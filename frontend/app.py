@@ -418,6 +418,57 @@ if page == "🔍 Analyze Resume":
                 for edu in entities.get("education", []):
                     st.markdown(f"- {edu.get('degree', '')} — {edu.get('context', '')[:80]}")
 
+        # ─── Email & Phone API Verification Results ──
+        st.markdown("---")
+        st.subheader("✅ Contact Verification Results")
+
+        ev_col, pv_col = st.columns(2)
+
+        with ev_col:
+            st.markdown("##### ✉️ Email Verification (ZeroBounce)")
+            email_verif = data.get("email_verification", [])
+            if email_verif:
+                for ev in email_verif:
+                    status = ev.get("status", "unknown")
+                    is_valid = ev.get("is_valid", False)
+                    is_disp = ev.get("is_disposable", False)
+                    badge_color = "#66bb6a" if is_valid else "#ef5350"
+                    badge_text = "VALID" if is_valid else status.upper()
+                    disp_badge = ' <span style="background:#ff7043;padding:2px 8px;border-radius:8px;font-size:0.75rem;">DISPOSABLE</span>' if is_disp else ""
+                    st.markdown(f"""
+                    <div class="glass-card" style="padding: 0.75rem; margin-bottom: 0.5rem;">
+                        <span style="font-weight:600;">{ev.get('email','N/A')}</span>
+                        <span style="background:{badge_color};color:#fff;padding:2px 10px;border-radius:8px;font-size:0.75rem;margin-left:8px;">{badge_text}</span>{disp_badge}
+                        <div style="color:#9e9e9e;font-size:0.8rem;margin-top:4px;">
+                            Sub-status: {ev.get('sub_status','—')}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("No email verification data available.")
+
+        with pv_col:
+            st.markdown("##### 📞 Phone Verification (NumVerify)")
+            phone_verif = data.get("phone_verification", [])
+            if phone_verif:
+                for pv in phone_verif:
+                    is_valid = pv.get("is_valid", False)
+                    badge_color = "#66bb6a" if is_valid else "#ef5350"
+                    badge_text = "VALID" if is_valid else "INVALID"
+                    line_type = pv.get("line_type", "unknown") or "unknown"
+                    voip_badge = ' <span style="background:#ffa726;padding:2px 8px;border-radius:8px;font-size:0.75rem;">VoIP</span>' if line_type.lower() == "voip" else ""
+                    st.markdown(f"""
+                    <div class="glass-card" style="padding: 0.75rem; margin-bottom: 0.5rem;">
+                        <span style="font-weight:600;">{pv.get('phone','N/A')}</span>
+                        <span style="background:{badge_color};color:#fff;padding:2px 10px;border-radius:8px;font-size:0.75rem;margin-left:8px;">{badge_text}</span>{voip_badge}
+                        <div style="color:#9e9e9e;font-size:0.8rem;margin-top:4px;">
+                            State: {pv.get('state','—')} | Country: {pv.get('country','—')}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("No phone verification data available.")
+
         # ─── Raw JSON ────────────────────────────────
         with st.expander("🔧 Raw API Response", expanded=False):
             st.json(data)
